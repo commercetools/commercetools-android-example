@@ -23,3 +23,4 @@ git clone git@github.com:commercetools/commercetools-android-example.git
 </resources>
 ```
 * Now you can open the project in Android Studio and play around with it ;)
+
