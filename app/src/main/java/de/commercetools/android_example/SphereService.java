@@ -99,6 +99,8 @@ public class SphereService extends Service {
         final Response.Listener<JSONObject> l = listener == null ? defaultSuccessListener : listener;
         final Response.ErrorListener e = errorListener == null ? defaultErrorListener : errorListener;
 
+        Log.i(getClass().getSimpleName(), "executing " + method + " " + url);
+
         globalRequestQueue.addToRequestQueue(
                 new AuthorizedJsonRequest(method, sphereApiHost + projectKey + url, requestBody, l,
                         new Response.ErrorListener() {

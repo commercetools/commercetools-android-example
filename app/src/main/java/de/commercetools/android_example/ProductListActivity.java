@@ -97,7 +97,7 @@ public class ProductListActivity extends ListActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            final SphereRequest productRequest = SphereRequest.get("/products").limit(5);
+            final SphereRequest productRequest = SphereRequest.get("/products").sort("createdAt desc").limit(5);
             sphereService.executeJacksonRequest(productRequest,
                     new Response.Listener<JsonNode>() {
                         @Override

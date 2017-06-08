@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class AuthenticationService extends Service {
     private GlobalRequestQueue globalRequestQueue;
@@ -29,10 +30,12 @@ public class AuthenticationService extends Service {
     }
 
     private JsonObjectRequest getAccessTokenRequest(final Response.Listener<JSONObject> listener) {
-        final String authUrl = getString(R.string.authUrl);
         final String grantType = getString(R.string.grantType);
-        final String scope = getString(R.string.scope) + getString(R.string.project);
-        return new JsonObjectRequest(Request.Method.POST, authUrl + "?" + grantType + "&" + scope, listener,
+        final String projectKey = getString(R.string.project);
+        final String authUrl = getString(R.string.authUrl)+ "/oauth/" + projectKey + "/anonymous/token/";
+        final String scope = createScopesString(projectKey);
+        final String anonymousId = UUID.randomUUID().toString();
+        return new JsonObjectRequest(Request.Method.POST, authUrl + "?" + grantType + "&" + scope + "&anonymous_id=" + anonymousId, listener,
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -49,6 +52,15 @@ public class AuthenticationService extends Service {
                 return params;
             }
         };
+    }
+
+    private String createScopesString(String projectKey) {
+        final String[] scopesArray = getResources().getStringArray(R.array.scopes);
+        final StringBuilder builder = new StringBuilder();
+        for (final String scope : scopesArray) {
+            builder.append(scope).append(":").append(projectKey).append(" ");
+        }
+        return builder.toString().trim();
     }
 
     private void showAuthenticationFailedToast() {
