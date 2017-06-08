@@ -29,6 +29,7 @@ public class CartActivity extends ListActivity {
     private static final String CART_VERSION = "cartVersion";
     private static final String NAME_TAG = "name";
     private static final String PRICE_TAG = "price";
+    private static final String CTP_CART_PREFS_KEY = "ctp.cart";
 
     private ObjectMapper mapper = new ObjectMapper();
     private ArrayList<HashMap<String, String>> lineItemList = new ArrayList<>();
@@ -39,12 +40,12 @@ public class CartActivity extends ListActivity {
         ObjectNode body = mapper.createObjectNode();
         body.put("currency", "EUR");
 
-        final SphereRequest request = SphereRequest.post("/carts", body.toString());
+        final SphereRequest request = SphereRequest.post("/me/carts", body.toString());
         sphereService.executeJacksonRequest(request,
                 new Response.Listener<JsonNode>() {
                     @Override
                     public void onResponse(JsonNode response) {
-                        final SharedPreferences prefs = getSharedPreferences("ctp.cart", 0);
+                        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
                         final SharedPreferences.Editor edit = prefs.edit();
                         edit.putString(CART_ID, response.get("id").asText());
                         addProductToCart(productId, response);
@@ -54,7 +55,7 @@ public class CartActivity extends ListActivity {
     }
 
     private void getCartAndAddProduct(final String productId, final String cartId) {
-        final SphereRequest getCart = SphereRequest.get("/carts/" + cartId);
+        final SphereRequest getCart = SphereRequest.get("/me/carts/" + cartId);
         sphereService.executeJacksonRequest(getCart,
                 new Response.Listener<JsonNode>() {
                     @Override
@@ -66,10 +67,10 @@ public class CartActivity extends ListActivity {
 
 
     public void deleteCart(View view) {
-        final SharedPreferences prefs = getSharedPreferences("ctp.cart", 0);
+        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
         final Long version = prefs.getLong(CART_VERSION, 1);
 
-        final SphereRequest deleteCart = SphereRequest.delete("/carts/" + prefs.getString(CART_ID, "") + "?version=" + version, "");
+        final SphereRequest deleteCart = SphereRequest.delete("/me/carts/" + prefs.getString(CART_ID, "") + "?version=" + version, "");
         sphereService.executeJacksonRequest(deleteCart,
                 new Response.Listener<JsonNode>() {
                     @Override
@@ -100,7 +101,7 @@ public class CartActivity extends ListActivity {
 
         Log.d(this.getClass().getSimpleName(), body.asText());
 
-        final SphereRequest addLineItem = SphereRequest.post("/carts/" + cartId, body.toString());
+        final SphereRequest addLineItem = SphereRequest.post("/me/carts/" + cartId, body.toString());
         sphereService.executeJacksonRequest(addLineItem,
                 new Response.Listener<JsonNode>() {
                     @Override
@@ -113,7 +114,7 @@ public class CartActivity extends ListActivity {
     }
 
     private void updateCartVersion(final JsonNode response) {
-        final SharedPreferences prefs = getSharedPreferences("ctp.cart", 0);
+        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
         final SharedPreferences.Editor edit = prefs.edit();
         edit.putLong(CART_VERSION, response.get("version").asLong());
         edit.commit();
@@ -184,7 +185,7 @@ public class CartActivity extends ListActivity {
             final SphereServiceBinder binder = (SphereServiceBinder) service;
             sphereService = binder.getService();
 
-            final SharedPreferences prefs = getSharedPreferences("ctp.cart", 0);
+            final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
             final String productId = getIntent().getStringExtra("productId");
 
             if (!prefs.contains(CART_ID)) {

@@ -13,12 +13,7 @@ git clone git@github.com:commercetools/commercetools-android-example.git
 ```
 * If you don't have a commercetools platform project yet, register at the [Merchant Center](https://admin.sphere.io/) and setup a project. If you add sample data, the app will work with that out of the box!
 * In the [Merchant Center](https://admin.sphere.io/), go to the `Developers` section and select `API Clients`
-* Copy `credentials.xml.template` to `credentials.xml`
-```bash
-cp commercetools-android-example/app/src/main/res/values/credentials.xml.template 
-commercetools-android-example/app/src/main/res/values/credentials.xml
-```
-* Uncomment the keys and enter your credentials
+* Change the keys and enter your credentials commercetools-android-example/app/src/main/res/values/credentials.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>

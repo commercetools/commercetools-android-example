@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="authUrl">https://auth.sphere.io/oauth/token</string>
+    <string name="authUrl">https://auth.sphere.io</string>
     <string name="grantType">grant_type=client_credentials</string>
-    <string name="scope">scope=manage_project:</string>
+    <string-array name="scopes">
+        <item>manage_my_orders</item>
+        <item>view_products</item>
+        <item>create_anonymous_token</item>
+        <item>manage_my_profile</item>
+        <item>view_project_settings</item>
+    </string-array>
 </resources>
