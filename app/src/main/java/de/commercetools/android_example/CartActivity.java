@@ -25,11 +25,10 @@ import java.util.Iterator;
 
 public class CartActivity extends ListActivity {
 
-    private static final String CART_ID = "cartId";
+    private static final String CART_ID = "cartId5";
     private static final String CART_VERSION = "cartVersion";
     private static final String NAME_TAG = "name";
     private static final String PRICE_TAG = "price";
-    private static final String CTP_CART_PREFS_KEY = "ctp.cart";
 
     private ObjectMapper mapper = new ObjectMapper();
     private ArrayList<HashMap<String, String>> lineItemList = new ArrayList<>();
@@ -45,7 +44,7 @@ public class CartActivity extends ListActivity {
                 new Response.Listener<JsonNode>() {
                     @Override
                     public void onResponse(JsonNode response) {
-                        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
+                        final SharedPreferences prefs = getSharedPreferences(SharedPrefKeys.CTP_PREFS_KEY, 0);
                         final SharedPreferences.Editor edit = prefs.edit();
                         edit.putString(CART_ID, response.get("id").asText());
                         addProductToCart(productId, response);
@@ -54,20 +53,21 @@ public class CartActivity extends ListActivity {
                 });
     }
 
-    private void getCartAndAddProduct(final String productId, final String cartId) {
-        final SphereRequest getCart = SphereRequest.get("/me/carts/" + cartId);
+    private void getCartAndAddProduct(final String productId) {
+        final SphereRequest getCart = SphereRequest.get("/me/active-cart");
         sphereService.executeJacksonRequest(getCart,
                 new Response.Listener<JsonNode>() {
                     @Override
-                    public void onResponse(JsonNode response) {
-                        addProductToCart(productId, response);
+                    public void onResponse(JsonNode cart) {
+                        getSharedPreferences(SharedPrefKeys.CTP_PREFS_KEY, 0).edit().putString(CART_ID, cart.get("id").asText());
+                        addProductToCart(productId, cart);
                     }
                 });
     }
 
 
     public void deleteCart(View view) {
-        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
+        final SharedPreferences prefs = getSharedPreferences(SharedPrefKeys.CTP_PREFS_KEY, 0);
         final Long version = prefs.getLong(CART_VERSION, 1);
 
         final SphereRequest deleteCart = SphereRequest.delete("/me/carts/" + prefs.getString(CART_ID, "") + "?version=" + version, "");
@@ -114,7 +114,7 @@ public class CartActivity extends ListActivity {
     }
 
     private void updateCartVersion(final JsonNode response) {
-        final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
+        final SharedPreferences prefs = getSharedPreferences(SharedPrefKeys.CTP_PREFS_KEY, 0);
         final SharedPreferences.Editor edit = prefs.edit();
         edit.putLong(CART_VERSION, response.get("version").asLong());
         edit.commit();
@@ -185,13 +185,13 @@ public class CartActivity extends ListActivity {
             final SphereServiceBinder binder = (SphereServiceBinder) service;
             sphereService = binder.getService();
 
-            final SharedPreferences prefs = getSharedPreferences(CTP_CART_PREFS_KEY, 0);
+            final SharedPreferences prefs = getSharedPreferences(SharedPrefKeys.CTP_PREFS_KEY, 0);
             final String productId = getIntent().getStringExtra("productId");
 
             if (!prefs.contains(CART_ID)) {
                 createCartAndAddProduct(productId);
             } else {
-                getCartAndAddProduct(productId, prefs.getString(CART_ID, null));
+                getCartAndAddProduct(productId);
             }
         }
         @Override
