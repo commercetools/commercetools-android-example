@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 public class CartActivity extends ListActivity {
 
-    private static final String CART_ID = "cartId5";
+    private static final String CART_ID = "cartId";
     private static final String CART_VERSION = "cartVersion";
     private static final String NAME_TAG = "name";
     private static final String PRICE_TAG = "price";
