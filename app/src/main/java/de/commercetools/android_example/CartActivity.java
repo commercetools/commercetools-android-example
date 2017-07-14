@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListAdapter;
@@ -23,14 +23,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+
 public class CartActivity extends ListActivity {
 
     private static final String CART_ID = "cartId";
     private static final String CART_VERSION = "cartVersion";
     private static final String NAME_TAG = "name";
     private static final String PRICE_TAG = "price";
-
-    private ObjectMapper mapper = new ObjectMapper();
+    @Inject
+    ObjectMapper mapper;
     private ArrayList<HashMap<String, String>> lineItemList = new ArrayList<>();
 
     private SphereService sphereService;
@@ -158,6 +162,7 @@ public class CartActivity extends ListActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
     }
